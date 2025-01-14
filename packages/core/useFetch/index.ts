@@ -23,7 +23,7 @@ export interface UseFetchReturn<T> {
   /**
    * Any fetch errors that may have occurred
    */
-  error: Ref<any>
+  error: Ref<Error | null>
 
   /**
    * The fetch response body on success, may either be JSON or text
@@ -120,7 +120,7 @@ export interface AfterFetchContext<T = any> {
   data: T | null
 }
 
-export interface OnFetchErrorContext<T = any, E = any> {
+export interface OnFetchErrorContext<T = any, E = Error> {
   error: E
 
   data: T | null
@@ -185,7 +185,7 @@ export interface UseFetchOptions {
    * Will run immediately after the fetch request is returned.
    * Runs after any 4xx and 5xx response
    */
-  onFetchError?: (ctx: { data: any, response: Response | null, error: any }) => Promise<Partial<OnFetchErrorContext>> | Partial<OnFetchErrorContext>
+  onFetchError?: (ctx: { data: any, response: Response | null, error: Error }) => Promise<Partial<OnFetchErrorContext>> | Partial<OnFetchErrorContext>
 }
 
 export interface CreateFetchOptions {
@@ -370,7 +370,7 @@ export function useFetch<T>(url: MaybeRefOrGetter<string>, ...args: any[]): UseF
   const aborted = ref(false)
   const statusCode = ref<number | null>(null)
   const response = shallowRef<Response | null>(null)
-  const error = shallowRef<any>(null)
+  const error = shallowRef<Error | null>(null)
   const data = shallowRef<T | null>(initialData || null)
 
   const canAbort = computed(() => supportsAbort && isFetching.value)
